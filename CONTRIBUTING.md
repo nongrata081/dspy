@@ -50,30 +50,97 @@ You may need the `--container-architecture linux/amd64` flag if you are on an M1
  act push
 ```
 
-## Commit Message format
+## How to commit
 
-Commit message format must be respected, with the following regex:
+After running `git commit` the [commitizen](https://commitizen-tools.github.io/commitizen/) cli utility is invoked. The prompt will step by step prompt you to fill in the data for the commit according to the [Conventional Commit Format](https://www.conventionalcommits.org/en/v1.0.0/). This is required to enable [changelog generation](https://commitizen-tools.github.io/commitizen/commands/changelog/) from commit history.
 
-This ends up looking like `feature(dspy): added new feature` or `enh(devcontainer): decreased size of image
+### Steps:
+
+1. `Select the type of change you are committing` **(REQUIRED)**
+
+   - **feat**: A new feature. Correlates with MINOR in SemVer (x.X.x)
+   - **fix**: A bug fix. Correlates with PATCH in SemVer (x.x.X)
+   - **test**: Adding missing or correcting existing tests
+   - **ci**: Changes to continuous integration configuration files and scripts
+   - **perf**: Performance improvements
+   - **refactor**: Code changes without affecting behavior (neither fixes a bug nor adds a feature)
+   - **chore**: Maintenance, revert, release
+   - **style**: Code style or formatting changes, that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+   - **docs**: Documentation only changes
+
+2. `What is the scope of this change (entity you've been working on)?` **(REQUIRED)**
+
+3. `Write a short and imperative summary of the code changes (lower case and no period)` **(REQUIRED)**
+
+   - If you want the github issue link you're working on to be rendered in the changelog, you can reference github issue in parentheses in the end of line, e.g.: `enable changelog generation (#1455)`
+   - Parantheses are required `()`, Number sign `#` with the actual number `123` are required
+
+4. `If this is a BREAKING CHANGE (correllates with MAJOR in SemVer (X.x.x)), describe the breaking changes and how to update the code to use it: (press [enter] to skip)` **(OPTIONAL)**
+
+   - If your commit introduces a breaking change, here you can describe what exactly is breaking and how, what APIs have changed, etc., any useful information for users about how to address it in their code
+
+5. `Provide additional contextual information about the code changes: (press [enter] to skip)` **(OPTIONAL)**
+
+---
+
+6. After filling in the commit message data according to these steps, the resulting formatted commit message will be opened in `COMMIT_EDITMSG` window. Here you can edit it, if needed. In order to create a commit, you have to fill in at least commit type, scope, short summary.
+
+   - Commit with all fields filled in might look like:
+
+     ```
+     fix(my-scope): add commitizen as cli prompt for commits, git-cliff for changelog generation (#1455)
+
+     BREAKING CHANGE: description of the breaking change
+     CONTEXT: additional context
+     ```
+
+   - How this commit would be generated in the **CHANGELOG.md**:
+     - **(my-scope)**: Short summary ([#1455](https://github.com/stanfordnlp/dspy/issues/1455)) - ([c9e802b](https://github.com/stanfordnlp/dspy/commit/c9e802b215f93d9e0910b9037f052edd04133bb9))
+       - **BREAKING**: description of the breaking change
+       - **context**: additional context
+
+## How to generate changelog (manually)
+
+To generate changelog:
 
 ```
-^(break|build|ci|docs|feat|fix|perf|refactor|style|test|ops|hotfix|release|maint|init|enh|revert)\([a-z,A-Z,0-9,\-,\_,\/,:]+\)(:)\s{1}([\w\s]+)
+git cliff -o
 ```
 
-Detailed Breakdown
-^: Asserts the start of a line. This means the pattern must match from the beginning of the string.
+The changelog is generated with access to Github API. Because of this you have to have your [Github Personal Access Token](https://github.com/settings/tokens) exported as an env variable:
 
-(break|build|ci|docs|feat|fix|perf|refactor|style|test|ops|hotfix|release|maint|init|enh|revert): This is a capture group that matches any one of the listed keywords. These keywords represent various types of commits, such as feat (feature), fix (bug fix), docs (documentation), etc.
+- Create your Personal Access Token, if you don't have one (with access to public repos)
+- Export Github Personal Access Token as an env variable (without ""):
 
-\( and \): Matches the literal parentheses ( and ). These are escaped with a backslash because parentheses are special characters in regular expressions, used for defining capture groups.
+  ```
+  export GITHUB_TOKEN=...
+  ```
 
-[a-z,A-Z,0-9,\-,\_,\/,:]+: Matches one or more characters inside the square brackets. It includes lowercase and uppercase letters (a-z, A-Z), digits (0-9), and specific special characters (-, \_, /, :). The comma (,) here is likely intended as a separator in the explanation but is actually being treated as a literal character to match, which might be a mistake unless the comma is an expected character in this context.
+## How commits are rendered in the changelog
 
-(:): Captures the colon character. This is another literal match, but it's also captured into a group because of the parentheses.
+### Based on commit type
 
-\s{1}: Matches exactly one whitespace character. {1} is technically redundant since the default behavior without specifying a quantity is to match exactly one.
+Commits of the following types are rendered into corresponding groups based on selected **commit type**:
 
-([\w\s]+): This capture group matches one or more word characters (\w, which includes letters, digits, and underscores) or whitespace characters (\s). This part is likely intended to capture the commit message that follows the initial keyword and scope.
+| Commit type | Changelog group          |
+| ----------- | ------------------------ |
+| feat        | 🚀 Features              |
+| fix         | 💊 Bug Fixes             |
+| test        | 🧪 Testing               |
+| ci          | 🛠 Continuous Integration |
+| perf        | ⚡️ Performance          |
+| refactor    | 🚜 Refactor              |
+| chore       | ⚙️ Chore                 |
+| style       | 🎨 Styling               |
+| docs        | 📚 Documentation         |
+| test        | 🧪 Testing               |
 
-Summary
-Putting it all together, this regex is used to enforce a structured format for commit messages, starting with a keyword indicating the commit type, followed by a scope enclosed in parentheses, a colon, a single space, and then the descriptive message. The scope part allows for various characters, including letters, numbers, and a few special characters, to accommodate different naming conventions.
+### Based on words in the commit message
+
+Commits, that are rendered into changelog groups based on the **words**, they contain **in the body of the commit** (in the short summary):
+
+| Word             | Changelog group     |
+| ---------------- | ------------------- |
+| breaking changes | 🟡 BREAKING CHANGES |
+| security         | 🛡️ Security         |
+| revert           | ⏪ Revert           |

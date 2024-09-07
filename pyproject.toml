@@ -142,6 +142,8 @@ black = "^24.2.0"
 pre-commit = "^3.7.0"
 ipykernel = "^6.29.4"
 semver = "^3.0.2"
+commitizen = "^3.29.0"
+git-cliff = "^2.5.0"
 
 [tool.poetry.extras]
 chromadb = ["chromadb"]
@@ -236,3 +238,70 @@ line-ending = "auto"
 [tool.ruff.lint.per-file-ignores]
 "**/{tests,testing,docs}/*" = ["ALL"]
 "**__init__.py" = ["ALL"]
+
+[tool.commitizen]
+name = "cz_customize"
+version_files = [
+    "pyproject.toml:version"
+]
+style = [
+    ["qmark", "fg:#ff9d00 bold"],
+    ["question", "bold"],
+    ["answer", "fg:#ff9d00 bold"],
+    ["pointer", "fg:#ff9d00 bold"],
+    ["highlighted", "fg:#ff9d00 bold"],
+    ["selected", "fg:#cc5454"],
+    ["separator", "fg:#cc5454"],
+    ["instruction", ""],
+    ["text", ""],
+    ["disabled", "fg:#858585 italic"]
+]
+
+[tool.commitizen.customize]
+message_template = """
+{{change_type}}({{scope}}): {{summary}}
+{% if breaking_change %}\nBREAKING CHANGE: {{breaking_change}}{% endif %}
+{% if context %}CONTEXT: {{context}}{% endif %}
+"""
+example = "ci(changelog-generation): this feature enable customize through config file (#1455)"
+schema = "<type>(<scope>): <message>"
+schema_pattern = "(feat|fix|test|ci|perf|refactor|chore|style|docs)(\\([\\w-]+\\)):\\s(.+?)(\\nBREAKING CHANGE:\\s.+)?(\\nCONTEXT:\\s.+)?"
+
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "change_type"
+choices = [
+    { value = "feat", name = "feat: A new feature. Correlates with MINOR in SemVer (x.X.x)" },
+    { value = "fix", name = "fix: A bug fix. Correlates with PATCH in SemVer (x.x.X)" },
+    { value = "test", name = "test: Adding missing or correcting existing tests" },
+    { value = "ci", name = "ci: Changes to continuous integration configuration files and scripts" },
+    { value = "perf", name = "perf: Performance improvements" },
+    { value = "refactor", name = "refactor: Code changes without affecting behavior (neither fixes a bug nor adds a feature)" },
+    { value = "chore", name = "chore: Maintenance, revert, release" },
+    { value = "style", name = "style: Code style or formatting changes, that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)" },
+    { value = "docs", name = "docs: Documentation only changes" }
+]
+message = "Select the type of change you are committing"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "scope"
+message = "What is the scope of this change (entity you've been working on)?\n"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "summary"
+message = "Write a short and imperative summary of the code changes: (lower case and no period)\n"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "breaking_change"
+message = """
+If this is a BREAKING CHANGE (correllates with MAJOR in SemVer (X.x.x)),
+describe the breaking changes and how to update the code to use it: (press [enter] to skip)
+"""
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "context"
+message = "Provide additional contextual information about the code changes: (press [enter] to skip)\n"
