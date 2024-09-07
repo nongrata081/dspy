@@ -50,30 +50,54 @@ You may need the `--container-architecture linux/amd64` flag if you are on an M1
  act push
 ```
 
-## Commit Message format
+## How to commit
 
-Commit message format must be respected, with the following regex:
+After running `git commit` the [commitizen](https://commitizen-tools.github.io/commitizen/) cli utility is invoked. The prompt will step by step prompt you to fill in the data for the commit according to the [Conventional Commit Format](https://www.conventionalcommits.org/en/v1.0.0/). This is required to enable [changelog generation](https://commitizen-tools.github.io/commitizen/commands/changelog/) from commit history. Note, only commits of type **fix**, **feat**, or **BREAKING CHANGE** get into the generated changelog.
 
-This ends up looking like `feature(dspy): added new feature` or `enh(devcontainer): decreased size of image
+### Steps:
 
-```
-^(break|build|ci|docs|feat|fix|perf|refactor|style|test|ops|hotfix|release|maint|init|enh|revert)\([a-z,A-Z,0-9,\-,\_,\/,:]+\)(:)\s{1}([\w\s]+)
-```
+1. `Select the type of change you are committing`
 
-Detailed Breakdown
-^: Asserts the start of a line. This means the pattern must match from the beginning of the string.
+   - **fix**: A bug fix. Correlates with PATCH in SemVer
+   - **feat**: A new feature. Correlates with MINOR in SemVer
+   - **docs**: Documentation only changes
+   - **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+   - **refactor**: A code change that neither fixes a bug nor adds a feature
+   - **perf**: A code change that improves performance
+   - **test**: Adding missing or correcting existing tests
+   - **build**: Changes that affect the build system or external dependencies (example scopes: pip, docker, npm)
+   - **ci**: Changes to CI configuration files and scripts (example scopes: GitLabCI)
 
-(break|build|ci|docs|feat|fix|perf|refactor|style|test|ops|hotfix|release|maint|init|enh|revert): This is a capture group that matches any one of the listed keywords. These keywords represent various types of commits, such as feat (feature), fix (bug fix), docs (documentation), etc.
+2. `What is the scope of this change? (class or file name)`
 
-\( and \): Matches the literal parentheses ( and ). These are escaped with a backslash because parentheses are special characters in regular expressions, used for defining capture groups.
+   - is optional. Can be any entity you were working on, so that it is easier to navigate
 
-[a-z,A-Z,0-9,\-,\_,\/,:]+: Matches one or more characters inside the square brackets. It includes lowercase and uppercase letters (a-z, A-Z), digits (0-9), and specific special characters (-, \_, /, :). The comma (,) here is likely intended as a separator in the explanation but is actually being treated as a literal character to match, which might be a mistake unless the comma is an expected character in this context.
+3. `Write a short and imperative summary of the code changes (lower case and no period)`
+   - isn't optional, is required.
+4. `Provide additional contextual information about the code changes`
+   - is optional
+5. `Is this a BREAKING CHANGE? Correlates with MAJOR in SemVer (y/N)`
+   - is optional. Pressing `Enter` will default to `No` and proceed to next step
+6. `Footer. Information about Breaking Changes and reference issues that this commit closes`
 
-(:): Captures the colon character. This is another literal match, but it's also captured into a group because of the parentheses.
+   - If your commit introduces a breaking change, here you can describe what exactly is breaking and how, any useful info for users about how to address it in their code
+   - You can reference github issue just by stating the number, e.g. #123
+   - is optional. Pressing `Enter` will default to `No` and proceed to next step
 
-\s{1}: Matches exactly one whitespace character. {1} is technically redundant since the default behavior without specifying a quantity is to match exactly one.
+7. After filling in the commit message data according to these steps, the resulting formatted commit message will be opened in `COMMIT_EDITMSG` window. Here you can edit it, if needed, e.g.:
 
-([\w\s]+): This capture group matches one or more word characters (\w, which includes letters, digits, and underscores) or whitespace characters (\s). This part is likely intended to capture the commit message that follows the initial keyword and scope.
+   ```
+   feat(scope): short summary
 
-Summary
-Putting it all together, this regex is used to enforce a structured format for commit messages, starting with a keyword indicating the commit type, followed by a scope enclosed in parentheses, a colon, a single space, and then the descriptive message. The scope part allows for various characters, including letters, numbers, and a few special characters, to accommodate different naming conventions.
+   contextual information
+
+   BREAKING CHANGE: breaking change is this and that, fix by using fixedApi() instead of brokenApi(), issue #123
+   ```
+
+   After closing the window, the commit message will be validated with commitizen check to verify if the commit message format complies with [Conventional Commit Format](https://www.conventionalcommits.org/en/v1.0.0/). The commit is made after successfully passing this check. If it doesn't pass, you have to edit the commit message according to the format.
+
+   ***
+
+   ## How to generate changelog (manually)
+
+   ...
