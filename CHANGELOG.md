@@ -4,9 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### 🟡 BREAKING CHANGES
+
+- **(my-scope)**: Short summary of the commit ([#1455](https://github.com/stanfordnlp/dspy/issues/1455)) - ([1000724](https://github.com/stanfordnlp/dspy/commit/10007243682c01bf22544b831d70091c3759d4f9))
+  - **BREAKING**: description of the breaking change. Don't use the broken_api(), use fixed_api() instead
+  - **context**: Here is the description of the context, for better understanding the introduced changes if needed
+
 ### 🛠 Continuous Integration
 
-- **(changelog)**: Add commitizen as cli prompt for commits, git-cliff for changelog generation ([#1455](https://github.com/stanfordnlp/dspy/issues/1455)) - ([e7c14c8](https://github.com/stanfordnlp/dspy/commit/e7c14c882618a4e3b61f506fea4de1760c6464b8))
+- **(changelog)**: Add commitizen as cli prompt for commits, git-cliff for changelog generation ([#1455](https://github.com/stanfordnlp/dspy/issues/1455)) - ([7bb4a8f](https://github.com/stanfordnlp/dspy/commit/7bb4a8f5a78e757be30ac1c16ddc321b2fbb8f75))
 
 ### ⚙️ Chore
 
